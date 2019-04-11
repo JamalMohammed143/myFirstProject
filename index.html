@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <button onclick="submitPortfolio()">Click</button>
+    <script>
+        /*Creating IndexedDB*/
+        var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+
+        var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction || {
+            READ_WRITE: "readwrite"
+        };
+        var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+
+        if (!indexedDB) {
+            var msg = "Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.";
+            alert('Warning: ' + msg);
+        } else {
+            console.log("DB created");
+        }
+
+        //var db, request;
+        var db = {};
+        var request = {};
+        var RMTable = 'RMData';
+        var clientTable = 'clientData';
+
+        /*DB Creation*/
+        function dbCreation() {
+            request = indexedDB.open('Jamal', 3);
+            request.onerror = function(event) {
+                console.log("event", event);
+            };
+            request.onupgradeneeded = function(event) {
+                db = event.target.result;
+                var RMDataStore = event.currentTarget.result.createObjectStore(RMTable, {
+                    keyPath: 'userName',
+                    autoIncrement: true
+                });
+
+                var clientDataStore = event.currentTarget.result.createObjectStore(clientTable, {
+                    keyPath: 'clientId',
+                    autoIncrement: true
+                });
+            };
+            request.onsuccess = function(evt) {
+                db = this.result;
+            };
+        };
+        dbCreation();
+        /*Changes End*/
+
+        function submitPortfolio() {
+            var getTable = db.transaction(clientTable, 'readwrite');
+            var storeData = getTable.objectStore(clientTable);
+            var req;
+
+            var saveData = {
+                firstName: "Jamal",
+                lastName: "Mohammed",
+                location: "Chennai"
+            };
+
+            req = storeData.add(saveData);
+
+            req.onsuccess = function(evt) {
+                alert("Data saved!");
+            };
+            req.onerror = function() {
+                console.error("addPublication error", this.error);
+            };
+        }
+
+        function getData() {
+            var transaction = db.transaction(clientTable, 'readonly');
+            var objectStore = transaction.objectStore(clientTable);
+
+            var myIndex = objectStore.index('lName');
+            var getRequest = myIndex.get('Bungle');
+        }
+
+
+        function moneyFormat(labelValue) {
+            // Nine Zeroes for Billions
+            return Math.abs(Number(labelValue)) >= 1.0e+9 ?
+                Math.abs(Number(labelValue)) / 1.0e+9 + "B"
+                // Six Zeroes for Millions 
+                :
+                Math.abs(Number(labelValue)) >= 1.0e+6 ?
+                Math.abs(Number(labelValue)) / 1.0e+6 + "M"
+                // Three Zeroes for Thousands
+                :
+                Math.abs(Number(labelValue)) >= 1.0e+3 ?
+                Math.abs(Number(labelValue)) / 1.0e+3 + "K" :
+                Math.abs(Number(labelValue));
+        }
+        var foo = moneyFormat(1000000000000);
+        //Reformat result to one decimal place
+        console.log("foo", foo);
+        console.log(parseFloat(foo).toPrecision(2) + foo.replace(/[^B|M|K]/g, ""));
+    </script>
+</body>
+
+</html>
