@@ -1,109 +1,186 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="myApp">
 
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-loader {
+            background-color: rgba(0, 0, 0, 0.3);
+            background-color: #1e2c24;
+            display: flex;
+            position: fixed;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .page-loader img {
+            max-width: 150px;
+        }
+    </style>
 </head>
 
-<body>
-    <button onclick="submitPortfolio()">Click</button>
-    <script>
-        /*Creating IndexedDB*/
-        var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+<body ng-controller="myCtrl">
+    <div class="page-loader" ng-if="mainLoaderIs">
+        <img src="img/pageLoader.gif" alt="Loader" />
+    </div>
 
-        var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction || {
-            READ_WRITE: "readwrite"
-        };
-        var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">LOGO{{1+2}}</a>
+    </nav>
 
-        if (!indexedDB) {
-            var msg = "Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.";
-            alert('Warning: ' + msg);
-        } else {
-            console.log("DB created");
-        }
+    <div class="container pt-5 pb-5" ng-init="autoCreateGroup()">
+        <div class="card">
+            <div>
+                <form class="form-inline pl-3" ng-submit="reloadFun()">
+                    <div class="form-group">
+                        <label>No. of Groups</label>
+                        <input type="number" class="form-control mx-sm-3" ng-model="groupsCount" />
+                    </div>
+                    <div class="form-group">
+                        <label>No. of Members</label>
+                        <input type="number" class="form-control mx-sm-3" ng-model="membersCount" />
+                        <button type="submit" class="btn btn-primary m-2">Reload</button>
+                    </div>
+                </form>
+            </div>
+            <table class="table m-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Groups Name</th>
+                        <th scope="col" ng-repeat="memList in membersInGroup track by $index" ng-bind="memList"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="list in createdGroupList track by $index">
+                        <th scope="row" ng-bind="'Grp-' + ($index+1)"></th>
+                        <td ng-bind="grp.name" ng-repeat="grp in list track by $index"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <h4 class="text-center text-danger" ng-if="createdGroupList.length == 0">Error</h4>
+        </div>
+    </div>
 
-        //var db, request;
-        var db = {};
-        var request = {};
-        var RMTable = 'RMData';
-        var clientTable = 'clientData';
+    <!-- Modal -->
+    <div class="modal fade" id="studentAddModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Student</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="Name">Name</label>
+                        <input type="text" class="form-control" id="Name" placeholder="Enter name" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="number">Mob Number</label>
+                        <input type="number" class="form-control" id="number" placeholder="Enter contact" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" aria-describedby="emailHelp"
+                            placeholder="Enter email" required />
+                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
+                            else.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        /*DB Creation*/
-        function dbCreation() {
-            request = indexedDB.open('Jamal', 3);
-            request.onerror = function(event) {
-                console.log("event", event);
-            };
-            request.onupgradeneeded = function(event) {
-                db = event.target.result;
-                var RMDataStore = event.currentTarget.result.createObjectStore(RMTable, {
-                    keyPath: 'userName',
-                    autoIncrement: true
-                });
+    <div class="modal fade" id="studentEditModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Student</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="Name">Name</label>
+                        <input type="text" class="form-control" id="Name" placeholder="Enter name" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="number">Mob Number</label>
+                        <input type="number" class="form-control" id="number" placeholder="Enter contact" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" aria-describedby="emailHelp"
+                            placeholder="Enter email" required />
+                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
+                            else.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal fade" id="studentDeleteModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">Delete Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <h3 style="color: #778899;">Are you sure you want delete this student?</h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-primary">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                var clientDataStore = event.currentTarget.result.createObjectStore(clientTable, {
-                    keyPath: 'clientId',
-                    autoIncrement: true
-                });
-            };
-            request.onsuccess = function(evt) {
-                db = this.result;
-            };
-        };
-        dbCreation();
-        /*Changes End*/
-
-        function submitPortfolio() {
-            var getTable = db.transaction(clientTable, 'readwrite');
-            var storeData = getTable.objectStore(clientTable);
-            var req;
-
-            var saveData = {
-                firstName: "Jamal",
-                lastName: "Mohammed",
-                location: "Chennai"
-            };
-
-            req = storeData.add(saveData);
-
-            req.onsuccess = function(evt) {
-                alert("Data saved!");
-            };
-            req.onerror = function() {
-                console.error("addPublication error", this.error);
-            };
-        }
-
-        function getData() {
-            var transaction = db.transaction(clientTable, 'readonly');
-            var objectStore = transaction.objectStore(clientTable);
-
-            var myIndex = objectStore.index('lName');
-            var getRequest = myIndex.get('Bungle');
-        }
-
-
-        function moneyFormat(labelValue) {
-            // Nine Zeroes for Billions
-            return Math.abs(Number(labelValue)) >= 1.0e+9 ?
-                Math.abs(Number(labelValue)) / 1.0e+9 + "B"
-                // Six Zeroes for Millions 
-                :
-                Math.abs(Number(labelValue)) >= 1.0e+6 ?
-                Math.abs(Number(labelValue)) / 1.0e+6 + "M"
-                // Three Zeroes for Thousands
-                :
-                Math.abs(Number(labelValue)) >= 1.0e+3 ?
-                Math.abs(Number(labelValue)) / 1.0e+3 + "K" :
-                Math.abs(Number(labelValue));
-        }
-        var foo = moneyFormat(1000000000000);
-        //Reformat result to one decimal place
-        console.log("foo", foo);
-        console.log(parseFloat(foo).toPrecision(2) + foo.replace(/[^B|M|K]/g, ""));
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
     </script>
+
+    <script type="text/javascript" src="plugins/angular-1.7.8/angular.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+
+
+    <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript" src="js/controllers/appCtrl.js"></script>
 </body>
 
 </html>
