@@ -115,4 +115,5 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', function ($scope, $timeout) {
     $timeout(function () {
         $scope.mainLoaderIs = false;
     }, 1000);
+    
 }]);
