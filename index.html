@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="css/all.min.css" />
     <link rel="stylesheet" href="css/theme.min.css" />
     <link rel="stylesheet" href="css/style.min.css" />
-
     <style>
         .page-loader {
             background-color: #1e2c24;
@@ -32,12 +31,6 @@
         .page-loader img {
             max-width: 150px;
         }
-
-        body>div[style*="text-align"] {
-            visibility: hidden;
-            height: 0;
-            overflow: hidden;
-        }
     </style>
 </head>
 
@@ -49,15 +42,17 @@
     <nav class="navbar navbar-expand-lg navbar-dark my-navbar">
         <a class="navbar-brand" href="#" title="Logo">
             <img src="img/logo.png" alt="Jamal" />
-            Jamal Mohammed
+            Group Divider
         </a>
     </nav>
 
-    <div class="container pt-5 pb-5" ng-init="autoCreateGroup()">
+    <div class="container pt-5 pb-5" ng-init="reloadFun()">
         <div class="card">
             <div class="groups-input-form">
                 <form class="form-inline" ng-submit="reloadFun()">
                     <div class="form-group">
+                        <button type="button" class="btn btn-secondary mr-3" data-toggle="modal"
+                            data-target="#memberAddModal">+ Add</button>
                         <label>No. of Groups</label>
                         <input type="number" class="form-control mx-sm-3" ng-model="groupsCount" />
                     </div>
@@ -66,10 +61,15 @@
                         <input type="number" class="form-control mx-sm-3" ng-model="membersCount" />
                         <button type="submit" class="btn btn-primary">Re-Create</button>
                     </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-secondary total-count-btn" data-toggle="modal"
+                            data-target="#membersListModal">Total <span ng-bind="membersList.length"
+                                class="total-count"></span></button>
+                    </div>
                 </form>
             </div>
 
-            <table class="table list-view">
+            <!-- <table class="table list-view">
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">Groups Name</th>
@@ -82,16 +82,16 @@
                         <td ng-bind="grp.name" ng-repeat="grp in list track by $index"></td>
                     </tr>
                 </tbody>
-            </table>
+            </table> -->
 
             <div class="box-view">
                 <div class="row">
-                    <div class="col-6" ng-repeat="list in createdGroupList track by $index">
+                    <div class="col-sm-3" ng-repeat="memList in createdGroupList track by $index">
                         <div class="card">
-                            <h5 ng-bind="'Grp-' + ($index+1)"></h5>
+                            <h5 ng-bind="'Group ' + ($index+1)"></h5>
                             <ul class="member-list">
-                                <li ng-repeat="grp in list track by $index">
-                                    <span ng-bind="grp.name"></span>
+                                <li ng-repeat="grp in memList track by $index">
+                                    <span class="name" ng-bind="grp.name || '--'"></span>
                                 </li>
                             </ul>
                         </div>
@@ -103,30 +103,36 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="studentAddModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade" id="memberAddModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <form class="modal-content">
+            <form class="modal-content" ng-submit="addMembers()">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add Student</h5>
+                    <h5 class="modal-title">Add Members</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="Name">Name</label>
-                        <input type="text" class="form-control" id="Name" placeholder="Enter name" required />
+                        <label for="Name">Name:</label>
+                        <input type="text" class="form-control" id="Name" ng-model="membersObj.name"
+                            placeholder="Enter your full name" required />
                     </div>
                     <div class="form-group">
-                        <label for="number">Mob Number</label>
-                        <input type="number" class="form-control" id="number" placeholder="Enter contact" required />
+                        <label for="empId">Employe Id:</label>
+                        <input type="number" class="form-control" id="empId" ng-model="membersObj.empId"
+                            placeholder="Enter emp id" required />
                     </div>
                     <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" aria-describedby="emailHelp"
-                            placeholder="Enter email" required />
-                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
-                            else.</small>
+                        <label for="department">Department:</label>
+                        <select class="form-control" id="department" ng-model="membersObj.department" required>
+                            <option value="" selected disabled>Select Department</option>
+                            <option value="UI">UI</option>
+                            <option value="UX">UX</option>
+                            <option value="INT">INT</option>
+                            <option value="Backend">Backend</option>
+                            <option value="Dev Ops">Dev Ops</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -137,37 +143,36 @@
         </div>
     </div>
 
-    <div class="modal fade" id="studentEditModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <form class="modal-content">
+    <div class="modal fade" id="membersListModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Student</h5>
+                    <h5 class="modal-title">All Members</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="Name">Name</label>
-                        <input type="text" class="form-control" id="Name" placeholder="Enter name" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="number">Mob Number</label>
-                        <input type="number" class="form-control" id="number" placeholder="Enter contact" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" aria-describedby="emailHelp"
-                            placeholder="Enter email" required />
-                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
-                            else.</small>
+                    <div class="mem-card-list">
+                        <div class="row no-gutters">
+                            <div class="col-3" ng-repeat="memList in membersList track by $index">
+                                <div class="card emp-card-ui" ng-class="{'female': memList.gender == 'female'}">
+                                    <span class="emp-id" ng-bind="memList.empId"></span>
+                                    <div class="card-img">
+                                        <img ng-src="{{memList.image}}" alt="Photo" />
+                                    </div>
+                                    <h5 class="card-title" ng-bind="memList.name" title="{{memList.name}}"></h5>
+                                    <p class="department" ng-bind="memList.department"></p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Update</button>
+                    <!-- <button type="submit" class="btn btn-primary">Update</button> -->
                 </div>
-            </form>
+            </div>
         </div>
     </div>
     <div class="modal fade" id="studentDeleteModal" tabindex="-1" role="dialog" aria-hidden="true">

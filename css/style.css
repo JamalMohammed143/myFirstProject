@@ -37,12 +37,135 @@ body {
     margin-right: 15px;
 }
 
-.list-view {
+.total-count-btn {
+    position: relative;
+    padding-right: 36px;
+}
+
+.total-count {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    color: #FF9800;
+    display: flex;
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* mem card list open*/
+
+.mem-card-list .no-gutters>[class*=col-] {
+    padding: 10px;
+}
+
+.emp-card-ui {
+    border: 0;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.emp-card-ui .card-img {
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    width: 80px;
+    height: 80px;
+    margin: 20px auto;
+    padding: 5px;
+}
+
+.emp-card-ui .card-img img {
+    max-width: 100%;
+    max-height: 100%;
+    -webkit-user-drag: none;
+}
+
+.emp-card-ui .card-title {
+    background-color: #00428a;
+    color: #f0f8ff;
+    font-size: 16px;
+    margin: 0;
+    padding: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.emp-card-ui.female .card-title {
+    background-color: #b32164;
+}
+
+.department {
+    font-size: 12px;
+    font-weight: 600;
+    color: #b9b9b9;
+}
+
+.emp-id {
+    color: #b9b9b9;
+    position: absolute;
+    right: 5px;
+    top: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/*  */
+.box-view {
+    margin-top: 30px;
+}
+
+.box-view>.row {
+    margin: 0;
+    padding: 15px 0;
+}
+
+.box-view>.row>.col-6 {
+    padding: 0 5px 10px;
+}
+
+.box-view .card h5 {
+    color: #025f6d;
+    border-bottom: 1px solid rgba(0, 0, 0, .125);
+    font-size: 18px;
+    text-align: center;
+    padding: 5px 8px;
     margin: 0;
 }
 
-.box-view {
-    display: none;
+.member-list {
+    counter-reset: my-sr-no;
+    list-style: none;
+    padding: 8px;
+    margin: 0;
+}
+
+.member-list>li {
+    counter-increment: my-sr-no;
+    position: relative;
+}
+
+.member-list>li::before {
+    content: counter(my-sr-no) ")";
+    color: #025f6d;
+    vertical-align: middle;
+    margin-right: 3px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.member-list>li .name {
+    color: #6c747d;
+    font-size: 16px;
+    font-weight: 600;
+    vertical-align: middle;
 }
 
 @media (max-width: 768px) {
@@ -64,34 +187,5 @@ body {
         margin-top: 15px;
     }
 
-    .list-view {
-        display: none;
-    }
 
-    .box-view {
-        display: block;
-    }
-
-    .box-view>.row {
-        margin-right: 5px;
-        margin-left: 5px;
-    }
-
-    .box-view>.row>.col-6 {
-        padding: 0 5px 10px;
-    }
-
-    .box-view .card h5 {
-        color: #025f6d;
-        border-bottom: 1px solid rgba(0, 0, 0, .125);
-        font-size: 18px;
-        text-align: center;
-        padding: 5px 8px;
-        margin: 0;
-    }
-
-    .member-list {
-        list-style: none;
-        padding: 0 8px;
-    }
 }
