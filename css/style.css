@@ -74,9 +74,10 @@ body {
 }
 
 .details-nav {
+    border-bottom: 1px solid #025f6d;
+    color: #025f6d;
     font-size: 16px;
     text-align: center;
-    color: #025f6d;
     padding: 5px;
 }
 
@@ -89,7 +90,7 @@ body {
 
 .member-chip-list>ul {
     margin: 0;
-    padding: 5px 0 0 10px;
+    padding: 12px 0 0 10px;
 }
 
 .member-chip-list>ul>li {
@@ -199,7 +200,7 @@ body {
 }
 
 .emp-card-ui .card-title {
-    background-color: #00428a;
+    background-color: #007bff;
     color: #f0f8ff;
     font-size: 16px;
     margin: 0;
@@ -211,7 +212,7 @@ body {
 }
 
 .emp-card-ui.female .card-title {
-    background-color: #b32164;
+    background-color: #e83e8c;
 }
 
 .department {

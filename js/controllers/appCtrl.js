@@ -58,8 +58,10 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
     $scope.reloadFun = function (params) {
         if (params == 'onload') {
             $.getJSON("js/json/membersList.json").then(function (result) {
-                $scope.allMembersList = angular.copy(result);
-                $scope.selMembersList = angular.copy(result);
+                $scope.allMembersList = result;
+            });
+            $.getJSON("js/json/selMembers.json").then(function (result) {
+                $scope.selMembersList = result;
                 $scope.autoCreateGroup();
             });
         } else {
