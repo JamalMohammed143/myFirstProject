@@ -1,11 +1,11 @@
 ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $timeout, $http) {
     $scope.mainLoaderIs = true;
-    $scope.membersList = [];
+    $scope.allMembersList = [];
+    $scope.selMembersList = [];
     $scope.createdGroupList = [];
     $scope.checkRandomNo = [];
     $scope.membersCount = 5;
     $scope.groupsCount = 4;
-    //$scope.membersInGroup = [];
     $scope.membersObj = {
         "name": "",
         "empId": "",
@@ -13,7 +13,7 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
     };
 
     $scope.addMembers = function () {
-        $scope.membersList.push(angular.copy($scope.membersObj));
+        $scope.allMembersList.push(angular.copy($scope.membersObj));
         $scope.membersObj.name = "";
         $scope.membersObj.empId = "";
         $scope.membersObj.department = "";
@@ -28,14 +28,9 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
     };
 
     $scope.autoCreateGroup = function () {
-        for (var r = 0; r < $scope.membersList.length; r++) {
+        for (var r = 0; r < $scope.selMembersList.length; r++) {
             $scope.checkRandomNo.push(r);
         }
-
-        // for (var m = 0; m < $scope.membersCount; m++) {
-        //     var members = "Member-" + (m + 1);
-        //     $scope.membersInGroup.push(members);
-        // }
 
         for (var g = 0; g < $scope.groupsCount; g++) {
             var group = [];
@@ -46,7 +41,7 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
                 if (group.length < $scope.membersCount) {
 
                     getIndex = $scope.randomNoCreator();
-                    group.push($scope.membersList[getIndex]);
+                    group.push($scope.selMembersList[getIndex]);
 
                 } else {
                     break;
@@ -56,20 +51,23 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
         }
     };
 
-    $scope.reloadFun = function () {
-        var url = "https://api.hosterapp.in/amsnode/getRoleList";
-        $http.get(url).then(function (response) {
-            $scope.students = response.data;
-        });
+    $scope.removeFromSelList = function (getIndex) {
+        $scope.selMembersList.splice(getIndex, 1);
+    };
 
-        $.getJSON("js/json/membersList.json").then(function (result) {
-            console.log('result', result);
-            $scope.membersList = result;
+    $scope.reloadFun = function (params) {
+        if (params == 'onload') {
+            $.getJSON("js/json/membersList.json").then(function (result) {
+                $scope.allMembersList = angular.copy(result);
+                $scope.selMembersList = angular.copy(result);
+                $scope.autoCreateGroup();
+            });
+        } else {
             $scope.createdGroupList = [];
             $scope.checkRandomNo = [];
             $scope.membersInGroup = [];
             $scope.autoCreateGroup();
-        });
+        }
     };
 
     $timeout(function () {

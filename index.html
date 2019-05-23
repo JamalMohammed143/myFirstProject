@@ -46,59 +46,78 @@
         </a>
     </nav>
 
-    <div class="container pt-5 pb-5" ng-init="reloadFun()">
-        <div class="card">
-            <div class="groups-input-form">
-                <form class="form-inline" ng-submit="reloadFun()">
-                    <div class="form-group">
+    <div class="row no-gutters main-container" ng-init="reloadFun('onload')">
+        <div class="col">
+            <div class="current-members-list">
+                <div class="details-nav">
+                    Total: <strong ng-bind="selMembersList.length"></strong>
+                </div>
+                <div class="member-chip-list">
+                    <ul>
+                        <li ng-repeat="cmList in selMembersList track by $index">
+                            <span class="icon"><img src="{{cmList.image}}" alt="Icon"></span>
+                            <span class="name" ng-bind="cmList.name || '--'"></span>
+                            <button ng-click="removeFromSelList($index)"><i class="fas fa-times"></i></button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-9">
+            <div class="card">
+                <div class="groups-input-form">
+                    <form class="form-inline" ng-submit="reloadFun('onclick')">
+                        <div class="form-group mr-3">
+                            <label>No. of Groups:</label>
+                            <input type="number" class="form-control mx-sm-3" ng-model="groupsCount" />
+                        </div>
+                        <div class="form-group">
+                            <label>No. of Members:</label>
+                            <input type="number" class="form-control mx-sm-3" ng-model="membersCount" />
+                            <button type="submit" class="btn btn-primary">Re-Create</button>
+                        </div>
+                    </form>
+                    <div class="">
+                        <button type="button" class="btn btn-secondary total-count-btn" data-toggle="modal"
+                            data-target="#membersListModal">Total <span ng-bind="allMembersList.length"
+                                class="total-count"></span></button>
+
                         <button type="button" class="btn btn-secondary mr-3" data-toggle="modal"
                             data-target="#memberAddModal">+ Add</button>
-                        <label>No. of Groups</label>
-                        <input type="number" class="form-control mx-sm-3" ng-model="groupsCount" />
                     </div>
-                    <div class="form-group">
-                        <label>No. of Members</label>
-                        <input type="number" class="form-control mx-sm-3" ng-model="membersCount" />
-                        <button type="submit" class="btn btn-primary">Re-Create</button>
-                    </div>
-                    <div class="form-group">
-                        <button type="button" class="btn btn-secondary total-count-btn" data-toggle="modal"
-                            data-target="#membersListModal">Total <span ng-bind="membersList.length"
-                                class="total-count"></span></button>
-                    </div>
-                </form>
-            </div>
+                </div>
 
-            <!-- <table class="table list-view">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">Groups Name</th>
-                        <th scope="col" ng-repeat="memList in membersInGroup track by $index" ng-bind="memList"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="list in createdGroupList track by $index">
-                        <th scope="row" ng-bind="'Grp-' + ($index+1)"></th>
-                        <td ng-bind="grp.name" ng-repeat="grp in list track by $index"></td>
-                    </tr>
-                </tbody>
-            </table> -->
+                <!-- <table class="table list-view">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Groups Name</th>
+                            <th scope="col" ng-repeat="memList in membersInGroup track by $index" ng-bind="memList"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="list in createdGroupList track by $index">
+                            <th scope="row" ng-bind="'Grp-' + ($index+1)"></th>
+                            <td ng-bind="grp.name" ng-repeat="grp in list track by $index"></td>
+                        </tr>
+                    </tbody>
+                </table> -->
 
-            <div class="box-view">
-                <div class="row">
-                    <div class="col-sm-3" ng-repeat="memList in createdGroupList track by $index">
-                        <div class="card">
-                            <h5 ng-bind="'Group ' + ($index+1)"></h5>
-                            <ul class="member-list">
-                                <li ng-repeat="grp in memList track by $index">
-                                    <span class="name" ng-bind="grp.name || '--'"></span>
-                                </li>
-                            </ul>
+                <div class="box-view">
+                    <div class="row">
+                        <div class="col-sm-3" ng-repeat="memList in createdGroupList track by $index">
+                            <div class="card">
+                                <h5 ng-bind="'Group ' + ($index+1)"></h5>
+                                <ul class="member-list">
+                                    <li ng-repeat="grp in memList track by $index">
+                                        <span class="name" ng-bind="grp.name || '--'"></span>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <h4 class="text-center text-danger" ng-if="createdGroupList.length == 0">Error</h4>
             </div>
-            <h4 class="text-center text-danger" ng-if="createdGroupList.length == 0">Error</h4>
         </div>
     </div>
 
@@ -155,7 +174,7 @@
                 <div class="modal-body">
                     <div class="mem-card-list">
                         <div class="row no-gutters">
-                            <div class="col-3" ng-repeat="memList in membersList track by $index">
+                            <div class="col-3" ng-repeat="memList in allMembersList track by $index">
                                 <div class="card emp-card-ui" ng-class="{'female': memList.gender == 'female'}">
                                     <span class="emp-id" ng-bind="memList.empId"></span>
                                     <div class="card-img">
