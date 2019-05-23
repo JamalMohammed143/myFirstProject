@@ -55,7 +55,11 @@
                 <div class="member-chip-list">
                     <ul>
                         <li ng-repeat="cmList in selMembersList track by $index">
-                            <span class="icon"><img src="{{cmList.image}}" alt="Icon"></span>
+                            <span class="icon">
+                                <img ng-src="{{cmList.image}}" alt="Photo" ng-if="cmList.image" />
+                                <img ng-src="{{cmList.gender == 'male' ? 'img/male.png' : 'img/female.png'}}"
+                                    alt="Photo" ng-if="!cmList.image" />
+                            </span>
                             <span class="name" ng-bind="cmList.name || '--'"></span>
                             <button ng-click="removeFromSelList($index)"><i class="fas fa-times"></i></button>
                         </li>
@@ -153,6 +157,12 @@
                             <option value="Dev Ops">Dev Ops</option>
                         </select>
                     </div>
+                    <div class="input-group">
+                        <div class="custom-file">
+                            <label class="custom-file-label" for="profilePhotoUploader">Choose photo</label>
+                            <input type="file" class="custom-file-input" id="profilePhotoUploader" />
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -172,13 +182,18 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <div class="details-nav">
+                        Total: <strong ng-bind="allMembersList.length"></strong>
+                    </div>
                     <div class="mem-card-list">
                         <div class="row no-gutters">
                             <div class="col-3" ng-repeat="memList in allMembersList track by $index">
                                 <div class="card emp-card-ui" ng-class="{'female': memList.gender == 'female'}">
                                     <span class="emp-id" ng-bind="memList.empId"></span>
                                     <div class="card-img">
-                                        <img ng-src="{{memList.image}}" alt="Photo" />
+                                        <img ng-src="{{memList.image}}" alt="Photo" ng-if="memList.image" />
+                                        <img ng-src="{{memList.gender == 'male' ? 'img/male.png' : 'img/female.png'}}"
+                                            alt="Photo" ng-if="!memList.image" />
                                     </div>
                                     <h5 class="card-title" ng-bind="memList.name" title="{{memList.name}}"></h5>
                                     <p class="department" ng-bind="memList.department"></p>
