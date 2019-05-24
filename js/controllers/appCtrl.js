@@ -9,6 +9,7 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
     $scope.membersObj = {
         "name": "",
         "empId": "",
+        "gender": "male",
         "department": ""
     };
 
@@ -16,6 +17,7 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
         $scope.allMembersList.push(angular.copy($scope.membersObj));
         $scope.membersObj.name = "";
         $scope.membersObj.empId = "";
+        $scope.membersObj.gender = "male";
         $scope.membersObj.department = "";
         $('#memberAddModal').modal('hide');
     };
@@ -70,6 +72,41 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
             $scope.membersInGroup = [];
             $scope.autoCreateGroup();
         }
+    };
+
+    var getElement, vanilla;
+    $scope.imageUplading = function () {
+        getElement = document.getElementById('vanilla-demo');
+        var imageObject = document.getElementById('profilePhotoUploader').files[0];
+        var img_src = URL.createObjectURL(imageObject);
+        console.log('img_src', img_src);
+        vanilla = new Croppie(getElement, {
+            viewport: {
+                width: 150,
+                height: 150,
+                type: 'circle'
+            },
+            boundary: {
+                width: 200,
+                height: 200
+            },
+            showZoomer: false
+        });
+        vanilla.bind({
+            url: img_src,
+            orientation: 4
+        });
+    };
+
+
+    $scope.getCroppedImage = function () {
+        vanilla.result('base64').then(function (result) {
+            console.log('result', result);
+        });
+        vanilla.result('blob').then(function (result) {
+            var imageFile = new File([result], "newPhoto.png");
+            console.log('imageFile', imageFile);
+        });
     };
 
     $timeout(function () {

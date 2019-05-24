@@ -287,6 +287,11 @@ body {
 }
 
 /*  */
+/* emp-add-form */
+.emp-add-form .form-group label {
+    color: #025f6d;
+}
+
 @media (max-width: 768px) {
     .groups-input-form .form-inline {
         justify-content: center;

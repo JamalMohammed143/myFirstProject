@@ -14,3 +14,12 @@
     background-color: #008498;
     border-color: #008498;
 }
+
+.modal-header {
+    background-color: #025f6d;
+    color: #ffffff;
+}
+
+.close {
+    color: #ffffff;
+}
