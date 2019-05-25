@@ -1,0 +1,604 @@
+<!--<div class="proj-loader" ng-if="uiLoaderIs"><img src="img/spinnerLoader.gif" alt="Loading..." /></div>-->
+<!-- Begin page content -->
+<div class="dashboard-container">
+    <div class="form-inline select-image-comp" ng-if="detectionFlowIs">
+        <div class="form-group selected">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="getImageFile" ng-disabled="fileisDisabled" name="getImageFile" accept="image/*" onchange="angular.element(this).scope().gettingImageFile(this)" title="&nbsp;" />
+                <label class="custom-file-label" for="getImageFile" id="imgFileLabel">Select image...</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="fileUrl">OR</label>
+            <input type="text" class="form-control" id="fileUrl" name="fileUrl" ng-change="imageUrlGettingFun()" ng-paste="imageUrlGettingFun()" ng-disabled="inputisDisabled" ng-model="imageUrl" placeholder="Paste URL here..." ng-keyup="getSubmitVal($event)" />
+        </div>
+        <button class="btn btn-secondary btn-sm" data-ng-click="showImage()" ng-disabled="inputisDisabled">Show Image</button>
+
+        <button data-ng-click="clearImage($event)" ng-disabled="isDisabled" data-ng-if="showClearBtn" class="btn btn-link btn-sm">Clear</button>
+    </div>
+
+    <div class="img-uploading-module">
+        <div class="row" ng-class="{'justify-content-center align-items-center' : !detectionFlowIs}">
+            <div class="stop-propagation"></div>
+            <div class="divider" ng-class="{'col-md-4':detectionFlowIs, 'col-md-8' : !detectionFlowIs}">
+                <div class="common-page-title">
+                    <h2 ng-if="detectionFlowIs">Group Photo</h2>
+                    <h2 ng-if="!detectionFlowIs">Choose a picture to Search in the system</h2>
+                </div>
+                <div class="border-box auto-height">
+                    <div class="form-inline select-image-comp" ng-if="!detectionFlowIs">
+                        <div class="choose-file-inner">
+                            <div class="form-group selected">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="getImageFile" ng-disabled="fileisDisabled" name="getImageFile" accept="image/*" onchange="angular.element(this).scope().gettingImageFile(this)" title="&nbsp;" />
+                                    <label class="custom-file-label" for="getImageFile" id="imgFileLabel">Select image...</label>
+                                </div>
+                            </div>
+                            <label for="fileUrl">OR</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="fileUrl" name="fileUrl" ng-change="imageUrlGettingFun()" ng-paste="imageUrlGettingFun()" ng-disabled="inputisDisabled" ng-model="imageUrl" placeholder="Paste URL here..." ng-keyup="getSubmitVal($event)" />
+                            </div>
+                            <div>
+                                <button class="btn btn-secondary btn-sm" data-ng-click="showImage()" ng-disabled="inputisDisabled">Show Image</button>
+                                <!--<button class="btn btn-secondary btn-sm" data-ng-click="pasteUrlFromClipboard()" ng-disabled="inputisDisabled"> Paste &amp; Show</button>-->
+                            </div>
+                            <div>
+                                <button data-ng-click="clearImage($event)" ng-disabled="isDisabled" data-ng-if="showClearBtn" class="btn btn-link btn-sm">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="getImageFileDragDrop" class="scroll-inner-box">
+                        <p class="drag-and-drop-placeholder" ng-if="dragAndDropMsgShownIs">Drag and drop picture here <br /> <small>(Supported formats of an image are .jpg, .png, .jpeg)</small></p>
+                        <div class="drag-and-drop-msg" ng-if="dragAndDropMsgShownIs">
+                            <!--<i class="fas fa-cloud-upload-alt"></i>-->
+                            <img src="img/imgUpload.png" />
+                            <p>Drag and drop picture here</p>
+                        </div>
+                        <canvas id="myCanvas" width="200" height="200">Your browser does not support the HTML5 canvas tag.</canvas>
+                    </div>
+                    <div class="detect-button-box">
+                        <button class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Click to detect" id="detectFaceBtn" data-ng-click="detectFaces()" ng-disabled="detectBtnDisabledIs">Detect</button>
+
+                        <button class="btn btn-link btn-sm" data-ng-click="pageCall('bulkTraining')">Bulk Folder</button>
+                    </div>
+                    <div class="proj-loader image-loader" ng-if="imageLoader">
+                        <div class="loader-box">
+                            <img src="img/spinnerLoader.gif" alt="Loading..." />
+                        </div>
+                    </div>
+                </div>
+                <div class="face-property-backdrop" ng-if="facePropertyViewer"></div>
+                <div class="face-property-viewer" ng-show="facePropertyViewer">
+                    <div class="viewer-header"> Face attributes
+                        <button class="btn icon-btn" ng-click="viewFacePropsHover('close')"><i class="fa fa-times"></i></button>
+                    </div>
+                    <div class="viewer-inner-body">
+                        <div class="detected-face-property">
+                            <div class="new-detected-person-img {{facePropsObject.gender}}">
+                                <img ng-src="{{facePropsObject.faceImageSrc}}" width="100%" />
+                            </div>
+                            <div class="gender-age">
+                                <p ng-bind="facePropsObject.gender"></p>
+                                <span>{{facePropsObject.age}} <small>Years (Approximate)</small></span>
+                            </div>
+                        </div>
+                        <div class="viewer-inner-content">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-6 prgs-bar">
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: {{facePropsObject.blur.percentage}}%;" aria-valuenow="{{facePropsObject.blur.percentage}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <span ng-bind="facePropsObject.blur.percentage+'%'"></span>
+                                </div>
+                                <div class="col-6 value-txt">
+                                    <div class="status-box">
+                                        <p>Blur</p>
+                                        <span class="status {{facePropsObject.blur.blurLevel}}" ng-bind="facePropsObject.blur.blurLevel"></span>
+                                    </div>
+                                    <img class="style-blur" ng-src="{{facePropsObject.faceImageSrc}}" />
+                                </div>
+                            </div>
+
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-6 prgs-bar">
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: {{facePropsObject.exposure.percentage}}%;" aria-valuenow="{{facePropsObject.exposure.percentage}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <span ng-bind="facePropsObject.exposure.percentage+'%'"></span>
+                                </div>
+                                <div class="col-6 value-txt">
+                                    <div class="status-box">
+                                        <p>Exposure</p>
+                                        <span class="status" ng-class="{'low':facePropsObject.exposure.exposureLevel == 'goodExposure','medium':facePropsObject.exposure.exposureLevel == 'overExposure','high':facePropsObject.exposure.exposureLevel == 'underExposure'}" ng-bind="facePropsObject.exposure.exposureLevel"></span>
+                                    </div>
+                                    <img class="style-exposure" ng-src="{{facePropsObject.faceImageSrc}}" />
+                                </div>
+                            </div>
+
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-6 prgs-bar">
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: {{facePropsObject.noise.percentage}}%;" aria-valuenow="{{facePropsObject.noise.percentage}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <span ng-bind="facePropsObject.noise.percentage+'%'"></span>
+                                </div>
+                                <div class="col-6 value-txt">
+                                    <div class="status-box">
+                                        <p>Noise</p>
+                                        <span class="status {{facePropsObject.noise.noiseLevel}}" ng-bind="facePropsObject.noise.noiseLevel"></span>
+                                    </div>
+                                    <img class="style-noise" src="img/faceAttributesIcons/noise-bg.PNG" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="occlusion-view">
+                            <h5 class="title">Is <span>NOT</span> occluded?</h5>
+                            <div class="occlusion-component">
+                                <div class="row no-gutters">
+                                    <div class="col-6">
+                                        <div class="my-rounded-img">
+                                            <img ng-src="{{facePropsObject.faceImageSrc}}" />
+                                        </div>
+                                        <div class="row no-gutters align-items-center overlay-division">
+                                            <div class="col-12" ng-class="{'active':facePropsObject.occlusion.eyeOccluded}"></div>
+                                            <div class="col-12" ng-class="{'active':facePropsObject.occlusion.foreheadOccluded}"></div>
+                                            <div class="col-12" ng-class="{'active':facePropsObject.occlusion.mouthOccluded}"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row no-gutters align-items-center label-division">
+                                            <div class="col-12">
+                                                <i class="" ng-class="{'fa fa-check':!facePropsObject.occlusion.eyeOccluded,'fa fa-times active':facePropsObject.occlusion.eyeOccluded}"></i><span>Forehead</span>
+                                            </div>
+                                            <div class="col-12">
+                                                <i class="" ng-class="{'fa fa-check':!facePropsObject.occlusion.foreheadOccluded,'fa fa-times active':facePropsObject.occlusion.foreheadOccluded}"></i><span>Eye</span>
+                                            </div>
+                                            <div class="col-12">
+                                                <i class="" ng-class="{'fa fa-check':!facePropsObject.occlusion.mouthOccluded,'fa fa-times active':facePropsObject.occlusion.mouthOccluded}"></i><span>Mouth</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row no-gutters align-items-center justify-content-center glasses-viewer" ng-if="facePropsObject.glasses != 'NoGlasses'">
+                                <div class="col-auto">
+                                    <img src="img/faceAttributesIcons/sunglasses.png" />
+                                </div>
+                                <div class="col-auto">
+                                    <strong ng-bind="facePropsObject.glasses"></strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="view-album-btn-box" ng-show="facePropsObject.personType == 'known' || facePropsObject.personType == 'unknown'">
+                            <button type="button" class="btn btn-primary default-small-action-btn" data-toggle="tooltip" data-placement="top" title="View album" ng-click="viewAlbumFun(facePropsObject)">
+                                <i class="far fa-images"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8 divider" ng-if="detectionFlowIs">
+                <div class="common-page-title">
+                    <h2>Training module</h2>
+                </div>
+                <div class="border-box">
+                    <div class="scroll-inner-box flowChange">
+                        <div class="faces-scrolling-box">
+                            <div class="training-module-status">
+                                <div class="row no-gutters">
+                                    <div class="col-3 total-face">
+                                        <div class="count-box pb-0">
+                                            <h2 class="mb-1">Total Faces</h2>
+                                            <strong ng-bind="pictureMaster.totalFaces"></strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="count-box familiar-face">
+                                            <h2>Familiar</h2>
+                                        </div>
+                                        <strong ng-bind="pictureMaster.knownFaces"></strong>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="count-box stranger-face">
+                                            <h2>Stranger</h2>
+                                        </div>
+                                        <strong ng-bind="pictureMaster.unknownFaces"></strong>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="count-box new-face">
+                                            <h2>New</h2>
+                                        </div>
+                                        <strong ng-bind="pictureMaster.newFaces"></strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="panel-body cropped-images">
+                                <div class="row card-wrap">
+                                    <div class="col-lg-3 col-md-6" ng-repeat="prsList in croppedFiles">
+                                        <div class="new-face-info-card-ui" data-ng-class="{'new-person': prsList.personState == 'New', 'known-person': prsList.personState == 'known', 'unknown-person': prsList.personState == 'unknown', 'stranger-person': prsList.personState == 'stranger', 'active': prsList.trainIs}" ng-mouseover="viewFacePropsHover('open',prsList)">
+                                            <button class="card-check-box-class" data-ng-click="checkCardFunction(prsList)" ng-if="prsList.personType != 'deleted' && prsList.personType != 'ignore'">
+                                                <i class="fa fa-check"></i>
+                                            </button>
+
+                                            <div class="new-detected-person-img-parent">
+                                                <div class="new-detected-person-img {{prsList.gender}}">
+                                                    <img ng-src="{{prsList.bindItemName}}" width="100%" />
+                                                </div>
+                                                <div class="progressbar">
+                                                    <span class="progress-value" ng-bind="prsList.confidence + '%'"> </span>
+                                                    <div class="progress">
+                                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{prsList.confidence}}" aria-valuemin="0" aria-valuemax="100" style="min-width: {{prsList.confidence}}%;"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="default-person-label-class" data-ng-bind="prsList.bindName + ' ' + prsList.lastName" ng-class="{'prs-deleted':prsList.personType == 'deleted' || prsList.personType == 'ignore'}"></div>
+
+                                            <!--<p class="new-unknown-alert-msg" data-ng-if="prsList.personState == 'unknown' && prsList.trainIs">
+												A new Unknown will be Created</p>-->
+                                            <div class="new-photo-correct-option" ng-if="prsList.personType != 'deleted' && prsList.personType != 'ignore' && !prsList.nameSelectedIs">
+                                                <span>Correct?</span>
+                                                <div class="new-photo-correct-btn-section">
+                                                    <button class="btn btn-primary correct-option-yes-btn" data-ng-click="checkPerson(prsList,'yes')">Y</button>
+                                                    <button class="btn btn-primary correct-option-no-btn" data-ng-click="checkPerson(prsList,'no')">N</button>
+                                                </div>
+                                                <p class="new-unknown-alert-msg" data-ng-if="prsList.personState == 'stranger' && prsList.trainIs"> A new Unknown will be Created </p>
+                                                <p class="not-train-msg" data-ng-if="!prsList.trainIs">This face will not be trained</p>
+                                            </div>
+                                            <div class="new-detected-input-details">
+                                                <div class="new-detected-btn-section" data-ng-if="prsList.viewer == 'New'">
+                                                    <button class="btn btn-primary btn-sm" data-ng-click="addNewPersonDetails($event, prsList, $index)">New</button>
+                                                    <p class="new-unknown-alert-msg" data-ng-if="prsList.trainIs">A new Unknown will be Created</p>
+
+                                                    <p class="new-unknown-alert-msg" data-ng-if="!prsList.trainIs"> This face will not be trained</p>
+                                                </div>
+                                                <div class="new-detected-inner-input" data-ng-if="prsList.viewer == ''">
+                                                    <div class="new-detected-person-input">
+                                                        <input type="text" name="fName" ng-model="prsList.firstName" placeholder="{{FPlaceholder}}" />
+                                                    </div>
+                                                    <div class="new-detected-person-input">
+                                                        <input type="text" name="lName" ng-model="prsList.lastName" placeholder="{{LPlaceholder}}" />
+                                                    </div>
+                                                    <button class="btn icon-btn" data-ng-click="backtToNew($event, prsList, $index)"><i class="fa fa-times"></i></button>
+                                                </div>
+                                            </div>
+
+                                            <p class="new-unknown-alert-msg" data-ng-if="prsList.personType == 'deleted'">You have deleted this person from the system.</p>
+                                            <p class="new-unknown-alert-msg" data-ng-if="prsList.personType == 'ignore'">You have ignored this person from the system.</p>
+                                            <p class="new-unknown-alert-msg" data-ng-if="prsList.nameSelectedIs">This face will be trained as <strong ng-bind="prsList.bindName + ' ' + prsList.lastName"></strong>.</p>
+                                            <div class="similiar-faces-viewer" ng-class="{'active':prsList.similiarFaceBtnBoxIs}">
+                                                <button class="btn icon-btn" data-ng-click="checkPerson(prsList,'yes')" ng-if="prsList.similiarFaceBtnBoxIs"><i class="fa fa-times"></i></button>
+
+                                                <div class="row no-gutters">
+                                                    <div class="col pr-2">
+                                                        <button type="button" class="btn btn-secondary btn-sm" ng-click="getSimiliarFaces(prsList,'similiar')" data-toggle="tooltip" data-placement="top" title="View similar faces">
+                                                            <i class="fas fa-retweet"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="col">
+                                                        <button type="button" class="btn btn-primary btn-sm" ng-click="getSimiliarFaces(prsList,'search')" data-toggle="tooltip" data-placement="top" title="Search person">
+                                                            <i class="fa fa-search"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--<span class="small-action-btn info" ng-click="viewFaceAttributes(prsList)"><i class="fa fa-exclamation-triangle"></i></span>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="action-btns" style="position: relative">
+                                <form class="form-row align-items-end" ng-submit="addntrain()">
+                                    <div class="form-group col mb-0">
+                                        <label for="eventTitle" class="m-0">Image title</label>
+                                        <input type="text" class="form-control" name="eventTitle" id="eventTitle" placeholder="Kevin's marriage reception" ng-model="faceelatedData.eventTitle" />
+                                    </div>
+                                    <div class="form-group mx-sm-3 col mb-0">
+                                        <label for="eventType" class="m-0">Event name</label>
+                                        <input type="text" class="form-control" ng-model="faceelatedData.eventType" placeholder="Type event name" auto-complete="autoCompleteOptions" />
+                                    </div>
+                                    <!--<div class="col-md-auto text-left" style="position: absolute; right: 5px; top: 5px; font-size: 12px;">
+										There are <b data-ng-bind="detectedFaceCnt"></b> person going to train.
+									</div>-->
+                                    <div class="col-md-auto text-left">
+                                        <button type="submit" class="btn btn-primary" id="addntrain" data-ng-bind="'Train (' + detectedFaceCnt + ')'" data-ng-disabled="isDisabled"> </button>
+                                    </div>
+                                    <div class="col-md-auto text-left">
+                                        <button type="button" class="btn btn-cancel" ng-click="pageReloadFunc()">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<h4 class="progress-status" id="lblInfo" ng-bind="lblInfo" ng-if="detectionFlowIs"></h4>-->
+</div>
+<!--Face Search Confirmation with Status Modal Box-->
+<div class="modal fade trained-successful-modal" id="successMsgModal" tabindex="-1" role="dialog" aria-labelledby="successMsgModal" aria-hidden="true">
+    <div class="modal-dialog modal-box-container" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Trained Successfully</h5>
+                <button type="button" class="close" ng-click="pageReloadFunc($event)">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="msg-content">
+                    <h5>You have trained <strong data-ng-bind="trainedFacesList.totalCount"></strong> new face(s) </h5>
+                    <div class="trained-info-msg">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <div class="title-box">
+                                    <span class="text">Successful</span> <span><strong class="badge status-familiar" data-ng-bind="trainedFacesList.trainedCount"></strong></span>
+                                </div>
+                                <div class="content-box">
+                                    <div class="row card-wrap mini-card">
+                                        <div class="col-md-2" ng-repeat="prsList in trainedFacesList.pictureData">
+                                            <div class="new-face-info-card-ui pb-2" ng-class="{'known-person':prsList.personType == 'known','unknown-person':prsList.personType == 'unknown'}">
+                                                <!--<span class="small-action-btn pinned" ng-class="{'active':prsList.pinnedStatus == 1}"><i class="fa fa-thumbtack"></i></span>
+                                                <span class="small-action-btn star-btn" ng-class="{'active':prsList.personTag == 'poi'}"><i class="fas fa-star"></i></span>-->
+
+                                                <div class="new-detected-person-img-parent">
+                                                    <div class="new-detected-person-img {{prsList.gender}}">
+                                                        <img ng-src="{{prsList.imgPath}}" width="100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="default-person-label-class" ng-bind="prsList.bindFirstName+' '+prsList.lastName"></div>
+                                                <!--<div class="progressbar">
+                                                    <span class="progress-value" ng-bind="prsList.confidence + '%'"> </span>
+                                                    <div class="progress">
+                                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{prsList.confidence}}" aria-valuemin="0" aria-valuemax="100" style="min-width: {{prsList.confidence}}%;"></div>
+                                                    </div>
+                                                </div>-->
+                                                <!--<p class="total-photos"><strong ng-bind="prsList.totalFaces"></strong> Photo(s)</p>-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-error-Msg" data-ng-if="trainedFacesList.pictureData.length == 0">
+                                        <div ng-if="!searchModalIs">
+                                            <h3><i class="fa fa-user"></i></h3>
+                                            <h4>There are no Successful Faces Yet!</h4>
+                                            <!--<p>Once you <strong>train</strong> a face, you'll see them here.</p>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="title-box">
+                                    <span class="text">Failed</span> <span><strong class="badge status-failed" data-ng-bind="trainedFacesList.failedCount"></strong></span>
+                                </div>
+                                <div class="content-box">
+                                    <div class="row card-wrap mini-card">
+                                        <div class="col-md-2" ng-repeat="prsList in trainedFacesList.personRejected">
+                                            <div class="new-face-info-card-ui pb-2" ng-class="{'known-person':prsList.personType == 'known','unknown-person':prsList.personType == 'unknown'}">
+                                                <!--<span class="small-action-btn pinned" ng-class="{'active':prsList.pinnedStatus == 1}"><i class="fa fa-thumbtack"></i></span>
+                                                <span class="small-action-btn star-btn" ng-class="{'active':prsList.personTag == 'poi'}"><i class="fas fa-star"></i></span>-->
+
+                                                <div class="new-detected-person-img-parent">
+                                                    <div class="new-detected-person-img {{prsList.gender}}">
+                                                        <img ng-src="{{prsList.imgPath}}" width="100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="default-person-label-class" ng-bind="prsList.bindFirstName+' '+prsList.lastName"></div>
+                                                <!--<div class="progressbar">
+                                                    <span class="progress-value" ng-bind="prsList.confidence + '%'"> </span>
+                                                    <div class="progress">
+                                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{prsList.confidence}}" aria-valuemin="0" aria-valuemax="100" style="min-width: {{prsList.confidence}}%;"></div>
+                                                    </div>
+                                                </div>-->
+                                                <!--<p class="total-photos"><strong ng-bind="prsList.totalFaces"></strong> Photo(s)</p>-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-error-Msg" data-ng-if="trainedFacesList.personRejected.length == 0">
+                                        <div ng-if="!searchModalIs">
+                                            <h3><i class="fa fa-user"></i></h3>
+                                            <h4>There are no Failed Faces Yet!</h4>
+                                            <!--<p>Once you <strong>train</strong> a face, you'll see them here.</p>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer successful-or-failed">
+                <button type="button" class="btn btn-cancel" ng-click="pageCall('mainHome')"> Go Home</button>
+                <button type="button" class="btn btn-primary" ng-click="pageReloadFunc($event)"> Search another Face</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Face Attribute Veiw Modal Box-->
+<!--<div class="modal fade face-attr-viewr" id="faceAttributesViewr" tabindex="-1" role="dialog" aria-labelledby="faceAttributesViewr" aria-hidden="true">
+    <div class="modal-dialog modal-box-container" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Face Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span class="fa fa-times"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="new-detected-person-img">
+                    <img ng-src="{{viewFaceAttributesObj.bindItemName}}" width="100%" />
+                </div>
+                <div>
+                    <pre id="json-display"></pre>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>-->
+
+
+<div class="modal fade similiar-faces-modal" id="similiarFacesModalBox" tabindex="-1" role="dialog" aria-labelledby="similiarFaceModal" aria-hidden="true">
+    <div class="modal-dialog modal-box-container" role="document">
+        <form class="modal-content" data-ng-submit="addingURLs(urlList)">
+            <div class="modal-header">
+                <h5 class="modal-title" ng-bind="searchModalIs ? 'Search Person' : 'Similar Face(s)'"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span class="fa fa-times"></span>
+                </button>
+            </div>
+            <div class="modal-body p-0 album-main-area">
+                <div class="has-search secondary-header" ng-if="searchModalIs">
+                    <div class="form-group">
+                        <span class="fa fa-search form-control-feedback"></span>
+                        <input type="text" class="form-control" placeholder="Search by name/id" data-ng-model="similiarNameSearchVal.value" ng-change="similiarNameFilterFunc(similiarNameSearchVal.value)" id="similiarNameSearchBox" />
+                    </div>
+                    <hr>
+                </div>
+                <div class="row no-gutters">
+                    <div class="col-auto">
+                        <div class="album-main-person">
+                            <div class="new-face-info-card-ui" ng-class="{'known-person':similiarFaceMainPersonObj.personType == 'known','unknown-person':similiarFaceMainPersonObj.personType == 'unknown'}">
+                                <span class="small-action-btn pinned" ng-class="{'active':similiarFaceMainPersonObj.pinnedStatus == 1}"><i class="fa fa-thumbtack"></i></span>
+                                <span class="small-action-btn star-btn" ng-class="{'active':similiarFaceMainPersonObj.personTag == 'poi'}"><i class="fas fa-star"></i></span>
+
+                                <div class="new-detected-person-img-parent">
+                                    <div class="new-detected-person-img {{similiarFaceMainPersonObj.gender}}">
+                                        <img ng-src="{{similiarFaceMainPersonObj.itemName}}" width="100%" />
+                                    </div>
+                                </div>
+                                <div class="default-person-label-class" ng-bind="similiarFaceMainPersonObj.bindName+' '+similiarFaceMainPersonObj.lastName"></div>
+                                <!--<p class="total-photos"><strong data-ng-bind="similiarFaceMainPersonObj.totalCount"></strong> Photo(s)</p>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col similiar-faces-main">
+                        <div class="row card-wrap mini-card">
+                            <div class="col-md-2" ng-repeat="prsList in similiarFacesList">
+                                <label for="selectedMergeId{{$index}}" class="new-face-info-card-ui clickable" ng-class="{'known-person':prsList.personType == 'known','unknown-person':prsList.personType == 'unknown','active':prsList.similiarFaceSelIs}">
+                                    <button class="card-check-box-class left-align">
+                                        <i class="fa fa-check"></i>
+                                        <input type="checkbox" id="selectedMergeId{{$index}}" ng-model="prsList.similiarFaceSelIs" ng-change="selectedSimiliarFace(prsList)" />
+                                    </button>
+                                    <span class="small-action-btn pinned" ng-class="{'active':prsList.pinnedStatus == 1}"><i class="fa fa-thumbtack"></i></span>
+                                    <span class="small-action-btn star-btn" ng-class="{'active':prsList.personTag == 'poi'}"><i class="fas fa-star"></i></span>
+
+                                    <div class="new-detected-person-img-parent">
+                                        <div class="new-detected-person-img {{prsList.gender}}">
+                                            <img ng-src="{{prsList.imgPath}}" width="100%" />
+                                        </div>
+                                    </div>
+                                    <div class="default-person-label-class" ng-bind="prsList.bindFirstName+' '+prsList.lastName"></div>
+                                    <p class="total-photos"><strong ng-bind="prsList.totalFaces"></strong> Photo(s)</p>
+                                </label>
+                            </div>
+                        </div>
+                        <!--<div class="merging-confirmation-box" ng-if="mergingConfirmationIs.similiarFaceSelIs">
+                            <div class="new-merge-confirmation-box">
+                                <p>Are you sure the name <b class="text-danger" data-ng-bind="similiarFaceMainPersonObj.bindName+' '+similiarFaceMainPersonObj.lastName"></b><br /><small>Will be</small><br />replace with <b class="text-success" data-ng-bind="mergingConfirmationIs.bindFirstName +' '+ mergingConfirmationIs.lastname"></b>?</p>
+
+                                <div class="confirmation-box-footer">
+                                    <div class="row m-0">
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-secondary btn-sm">Cancel</button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-primary btn-sm">Ok</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>-->
+
+                        <div class="info-error-Msg" data-ng-if="similiarFacesList.length == 0">
+                            <div ng-if="!searchModalIs">
+                                <h3><i class="fa fa-user"></i></h3>
+                                <h4>There are no Similiar Faces Yet!</h4>
+                                <p>Once you <strong>train</strong> a face, you'll see them here.</p>
+                            </div>
+                            <div ng-if="searchModalIs">
+                                <h3><i class="fa fa-user"></i></h3>
+                                <h4>No Faces yet!</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" data-dismiss="modal">Cancel</button>
+                <!--<button type="submit" class="btn btn-primary">Create</button>-->
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal fade person-album-modal" id="personAlbumModalBox" tabindex="-1" role="dialog" aria-labelledby="personAlbumModalBox" aria-hidden="true">
+    <div class="modal-dialog modal-box-container" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Album view</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span class="fa fa-times"></span>
+                </button>
+            </div>
+            <div class="modal-body p-0 album-main-area">
+                <div class="row no-gutters">
+                    <div class="col-auto">
+                        <div class="album-main-person">
+                            <div class="new-face-info-card-ui" ng-class="{'known-person':mainPersonObject.personType == 'known','unknown-person':mainPersonObject.personType == 'unknown'}">
+                                <span class="small-action-btn pinned" ng-class="{'active':mainPersonObject.pinnedStatus == 1}"><i class="fa fa-thumbtack"></i></span>
+                                <span class="small-action-btn star-btn" ng-class="{'active':mainPersonObject.personTag == 'poi'}"><i class="fas fa-star"></i></span>
+                                <div class="new-detected-person-img-parent">
+                                    <div class="new-detected-person-img {{mainPersonObject.gender}}">
+                                        <img ng-src="{{mainPersonObject.imgPath}}" width="100%" />
+                                    </div>
+                                </div>
+                                <div class="default-person-label-class" ng-bind="mainPersonObject.bindFirstName +' '+mainPersonObject.lastname"></div>
+                                <p class="total-photos"><strong data-ng-bind="mainPersonObject.totalCount"></strong> Photo(s)</p>
+                                <!--<span class="small-action-btn info" ng-click="personInfoView(mainPersonObject)"><i class="fa fa-info"></i></span>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="row mini-card no-gutters face-card-ui">
+                            <div class="col-auto" ng-repeat="prsList in personAlbumFacesList">
+                                <div class="new-detected-person-img-parent">
+                                    <div class="new-detected-person-img faces-only">
+                                        <img ng-src="{{prsList.imgPath}}" width="100%" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-error-Msg" data-ng-if="personAlbumFacesList.length == 0">
+                            <div ng-class="{'familiar':mainPersonObject.personType == 'known','stranger':mainPersonObject.personType == 'unknown'}">
+                                <h3><i class="fa fa-user"></i></h3>
+                                <h4>There are no Faces Yet!</h4>
+                                <p>Once you <strong>train</strong> a face, you'll see them here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" data-dismiss="modal">Cancel</button>
+                <!--<button type="button" class="btn btn-primary">Create</button>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="cnfrm-alert-backdrop" style="display:none" id="mergingConfirmationModalBox">
+    <div class="alert confirmation-alert-box alert-restore">
+        <button class="alert-close-btn" ng-click="dismissThisAlert(this)"><i class="fa fa-times"></i></button>
+        <div class="alert-box-body">
+            <i class="fas fa-user"></i>
+            <p>Are you sure you want to map this face into <strong class="text-capitalize" data-ng-bind="mergingConfirmationObj.bindFirstName +' '+ mergingConfirmationObj.lastname"></strong>?</p>
+        </div>
+        <div class="alert-box-footer">
+            <button type="button" class="btn btn-disagree" ng-click="dismissThisAlert(this)">Cancel</button>
+            <button type="button" class="btn btn-agree" ng-click="addFaceIntoTheSelPerson(mergingConfirmationObj)">Ok</button>
+        </div>
+    </div>
+</div>

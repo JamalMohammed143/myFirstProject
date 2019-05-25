@@ -14,11 +14,13 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
     };
 
     $scope.addMembers = function () {
+        console.log('$scope.membersObj', $scope.membersObj);
         $scope.allMembersList.push(angular.copy($scope.membersObj));
         $scope.membersObj.name = "";
         $scope.membersObj.empId = "";
         $scope.membersObj.gender = "male";
         $scope.membersObj.department = "";
+        $scope.membersObj.image = "";
         $('#memberAddModal').modal('hide');
     };
 
@@ -74,13 +76,13 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
         }
     };
 
-    var getElement, vanilla;
+    var getElement, croppingElement;
     $scope.imageUplading = function () {
-        getElement = document.getElementById('vanilla-demo');
+        $('#croppingContainer').show();
+        getElement = document.getElementById('imageCroppingBox');
         var imageObject = document.getElementById('profilePhotoUploader').files[0];
         var img_src = URL.createObjectURL(imageObject);
-        console.log('img_src', img_src);
-        vanilla = new Croppie(getElement, {
+        croppingElement = new Croppie(getElement, {
             viewport: {
                 width: 150,
                 height: 150,
@@ -92,22 +94,46 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
             },
             showZoomer: false
         });
-        vanilla.bind({
+        croppingElement.bind({
             url: img_src,
             orientation: 4
         });
     };
 
+    $scope.destroyTheCropping = function () {
+        croppingElement.destroy();
+        $('#profilePhotoUploader').val(null);
+        $('#croppingContainer').hide();
+    };
+
+    $scope.cancelAll = function () {
+        $('#croppedImageViewer').hide();
+        $('#photoUploadingLabel').show();
+    };
 
     $scope.getCroppedImage = function () {
-        vanilla.result('base64').then(function (result) {
-            console.log('result', result);
+        croppingElement.result('base64').then(function (result) {
+            $('#croppedImageViewer img').attr('src', result);
+            $scope.membersObj.image = result;
         });
-        vanilla.result('blob').then(function (result) {
+        croppingElement.result('blob').then(function (result) {
             var imageFile = new File([result], "newPhoto.png");
             console.log('imageFile', imageFile);
         });
+        croppingElement.destroy();
+        $('#profilePhotoUploader').val(null);
+        $('#croppingContainer, #photoUploadingLabel').hide();
+        $('#croppedImageViewer').show();
     };
+
+    $('#memberAddModal').on('hide.bs.modal', function (event) {
+        if ($('#profilePhotoUploader').val()) {
+            croppingElement.destroy();
+            $('#profilePhotoUploader').val(null);
+        }
+        $('#croppingContainer, #croppedImageViewer').hide();
+        $('#photoUploadingLabel').show();
+    });
 
     $timeout(function () {
         $scope.mainLoaderIs = false;

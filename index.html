@@ -166,21 +166,32 @@
                                     <option value="Dev Ops">Dev Ops</option>
                                 </select>
                             </div>
+                            <div class="gender-selector">
+                                <label class="d-block" for="department">Gender:</label>
+                                <div class="gender-box">
+                                    <input type="radio" name="male" id="maleId" value="male"
+                                        ng-model="membersObj.gender" />
+                                    <label for="maleId"><img src="img/male.png" alt="Male" /></label>
+                                </div>
+                                <div class="gender-box">
+                                    <input type="radio" name="female" id="femaleId" value="female"
+                                        ng-model="membersObj.gender" />
+                                    <label for="femaleId"><img src="img/female.png" alt="Female" /></label>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-6">
                             <div class="photo-selector">
-                                <label class="custom-file-label" for="profilePhotoUploader">Choose photo</label>
-                                <input type="file" class="custom-file-input" id="profilePhotoUploader" />
-                                <div id="vanilla-demo"></div>
-
-                                <button type="button" ng-click="imageUplading()">Click1</button>
-                                <button type="button" ng-click="getCroppedImage()">Click</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="gender-selector">
+                                <label for="profilePhotoUploader" id="photoUploadingLabel">
+                                    <i class="fas fa-camera"></i>
+                                </label>
+                                <input type="file" id="profilePhotoUploader" accept="image/*"
+                                    onchange="angular.element(this).scope().imageUplading(this)" />
+                                <div class="cropped-image-view" id="croppedImageViewer" style="display: none;">
+                                    <button type="button" class="btn cancel-all-btn" ng-click="cancelAll()"><i
+                                            class="fas fa-times"></i></button>
+                                    <img src="" alt="Cropped Image" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -188,6 +199,12 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                <div class="cropping-cont" style="display: none;" id="croppingContainer">
+                    <button type="button" class="btn close-btn" ng-click="destroyTheCropping()"><i
+                            class="fas fa-times"></i></button>
+                    <div class="cropping-box" id="imageCroppingBox"></div>
+                    <button type="button" class="btn btn-success capture-btn" ng-click="getCroppedImage()">OK</button>
                 </div>
             </form>
         </div>

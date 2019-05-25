@@ -288,8 +288,135 @@ body {
 
 /*  */
 /* emp-add-form */
+.emp-add-form .gender-selector label,
 .emp-add-form .form-group label {
     color: #025f6d;
+}
+
+.gender-selector {
+    text-align: center;
+    padding-top: 8px;
+}
+
+.gender-box {
+    display: inline-block;
+    margin: 0 8px;
+    position: relative;
+}
+
+.gender-box label {
+    background-color: #d4d4d4;
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    margin: 0;
+    filter: grayscale(1);
+}
+
+.gender-box input[type=radio]:checked+label {
+    filter: grayscale(0);
+}
+
+.gender-box label img {
+    width: 100%;
+}
+
+/*  */
+.photo-selector {
+    position: relative;
+    text-align: center;
+    padding-top: 15px;
+}
+
+.photo-selector label {
+    border: 2px dashed #ccc;
+    cursor: pointer;
+    width: 150px;
+    height: 150px;
+    margin: 0;
+    font-size: 60px;
+    line-height: 140px;
+    text-align: center;
+}
+
+.gender-box input[type='radio'],
+.photo-selector input[type='file'] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 0;
+    top: 0;
+    overflow: hidden;
+    opacity: 0;
+}
+
+.cropped-image-view {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    border: 1px solid #555;
+    background-color: #d8d8d8;
+    padding: 10px;
+    position: relative;
+}
+
+.btn.cancel-all-btn {
+    background-color: #212529;
+    color: #fff;
+    border-radius: 50%;
+    position: absolute;
+    font-size: 18px;
+    right: -12px;
+    top: -12px;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    z-index: 1;
+}
+
+.cropped-image-view img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* cropping */
+.cropping-cont {
+    background-color: rgba(0, 0, 0, 0.8);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.cropping-cont .btn.close-btn,
+.cropping-cont .btn.capture-btn {
+    position: absolute;
+    z-index: 1;
+}
+
+.cropping-cont .btn.close-btn {
+    color: #fff;
+    font-size: 26px;
+    right: 5px;
+    top: 5px;
+    padding: 0 12px;
+}
+
+.cropping-cont .btn.capture-btn {
+    font-size: 18px;
+    bottom: 10px;
+    right: 10px;
+}
+
+.croppie-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 @media (max-width: 768px) {
