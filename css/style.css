@@ -60,17 +60,19 @@ body {
 
 .main-container>div[class*=col] {
     padding: 10px;
-    overflow: auto;
     max-height: 100%;
 }
 
 .current-members-list {
+    background-color: #fff;
     box-shadow: 0 0 5px #000;
     border-radius: 5px;
     display: flex;
     height: 100%;
-    overflow: hidden;
     flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    z-index: 2;
 }
 
 .details-nav {
@@ -82,10 +84,11 @@ body {
 }
 
 .member-chip-list {
-    height: 100%;
+    max-height: 100%;
     width: 100%;
     overflow: auto;
     padding-right: 10px;
+    position: relative;
 }
 
 .member-chip-list>ul {
@@ -136,6 +139,50 @@ body {
     width: 30px;
     height: 30px;
     font-size: 14px;
+}
+
+.member-adding-btn {
+    margin: 0;
+    border-radius: 0;
+    font-size: 16px;
+    order: 2;
+    position: relative;
+}
+
+.member-adding-btn i {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    transition: all 0.3s ease-in-out;
+    -webkit-transition: all 0.3s ease-in-out;
+}
+
+.member-adding-btn i.open {
+    transform: translateY(-50%) rotate(180deg);
+    -webkit-transform: translateY(-50%) rotate(180deg);
+}
+
+.all-member-list {
+    background-color: #fff;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: 100%;
+    top: 10px;
+    bottom: 45px;
+    width: 250px;
+    overflow: hidden;
+    margin-left: -260px;
+    transition: all 0.3s ease-in-out;
+    z-index: 1;
+}
+
+.all-member-list.open {
+    box-shadow: 0 0 5px #000;
+    margin-left: 0;
 }
 
 /*  */

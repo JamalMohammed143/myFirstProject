@@ -13,6 +13,13 @@
     "gender": "female",
     "image": ""
 }, {
+    "id": "3",
+    "empId": "14",
+    "department": "INT",
+    "name": "Shabudeen Shaikh",
+    "gender": "male",
+    "image": ""
+}, {
     "id": "4",
     "empId": "3",
     "department": "QA",
@@ -122,13 +129,6 @@
     "empId": "20",
     "department": "Dev Ops",
     "name": "Abdul Niyaz",
-    "gender": "male",
-    "image": ""
-}, {
-    "id": "20",
-    "empId": "14",
-    "department": "INT",
-    "name": "Shabudeen Shaikh",
     "gender": "male",
     "image": ""
 }]

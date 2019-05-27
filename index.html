@@ -62,13 +62,37 @@
                                     alt="Photo" ng-if="!cmList.image" />
                             </span>
                             <span class="name" ng-bind="cmList.name || '--'"></span>
-                            <button ng-click="removeFromSelList($index)"><i class="fas fa-times"></i></button>
+                            <button ng-click="removeFromSelList('selList', $index)"><i
+                                    class="fas fa-angle-double-right"></i></button>
+                        </li>
+                    </ul>
+                </div>
+                <button type="button" class="btn btn-dark member-adding-btn" ng-click="addMembersFromAll()">
+                    <span ng-bind="memrsListViewOpenIs ? 'Close' : 'Add Member'"></span>
+                    <i class="fas fa-arrow-right" ng-class="{'open':memrsListViewOpenIs}"></i>
+                </button>
+            </div>
+            <div class="all-member-list" ng-class="{'open':memrsListViewOpenIs}">
+                <div class="details-nav">
+                    Total: <strong ng-bind="unSelMembersList.length"></strong>
+                </div>
+                <div class="member-chip-list">
+                    <ul>
+                        <li ng-repeat="cmList in unSelMembersList track by $index">
+                            <button ng-click="removeFromSelList('allList', $index)"><i
+                                    class="fas fa-angle-double-left"></i></button>
+                            <span class="name" ng-bind="cmList.name || '--'"></span>
+                            <span class="icon">
+                                <img ng-src="{{cmList.image}}" alt="Photo" ng-if="cmList.image" />
+                                <img ng-src="{{cmList.gender == 'male' ? 'img/male.png' : 'img/female.png'}}"
+                                    alt="Photo" ng-if="!cmList.image" />
+                            </span>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
-        <div class="col-9">
+        <div class="col-9 overflow-auto">
             <div class="card">
                 <div class="groups-input-form">
                     <form class="form-inline" ng-submit="reloadFun('onclick')">

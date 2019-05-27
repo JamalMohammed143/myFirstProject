@@ -2,6 +2,7 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
     $scope.mainLoaderIs = true;
     $scope.allMembersList = [];
     $scope.selMembersList = [];
+    $scope.unSelMembersList = [];
     $scope.createdGroupList = [];
     $scope.checkRandomNo = [];
     $scope.membersCount = 5;
@@ -14,7 +15,6 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
     };
 
     $scope.addMembers = function () {
-        console.log('$scope.membersObj', $scope.membersObj);
         $scope.allMembersList.push(angular.copy($scope.membersObj));
         $scope.membersObj.name = "";
         $scope.membersObj.empId = "";
@@ -55,8 +55,14 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
         }
     };
 
-    $scope.removeFromSelList = function (getIndex) {
-        $scope.selMembersList.splice(getIndex, 1);
+    $scope.removeFromSelList = function (fromList, getIndex) {
+        if (fromList == "selList") {
+            $scope.unSelMembersList.push($scope.selMembersList[getIndex]);
+            $scope.selMembersList.splice(getIndex, 1);
+        } else {
+            $scope.selMembersList.push($scope.unSelMembersList[getIndex]);
+            $scope.unSelMembersList.splice(getIndex, 1);
+        }
     };
 
     $scope.reloadFun = function (params) {
@@ -73,6 +79,30 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
             $scope.checkRandomNo = [];
             $scope.membersInGroup = [];
             $scope.autoCreateGroup();
+        }
+    };
+
+    $scope.memrsListViewOpenIs = false;
+    $scope.addMembersFromAll = function () {
+        if ($scope.memrsListViewOpenIs) {
+            $scope.memrsListViewOpenIs = false;
+        } else {
+            $scope.unSelMembersList = [];
+            var loopLength = $scope.selMembersList.length - 1;
+            for (var i = 0; i < $scope.allMembersList.length; i++) {
+                for (var g = 0; g < $scope.selMembersList.length; g++) {
+                    console.log($scope.allMembersList[i].id, $scope.selMembersList[g].id);
+                    if ($scope.allMembersList[i].id == $scope.selMembersList[g].id) {
+                        break;
+                    } else {
+                        console.log(loopLength, g);
+                        if (g == loopLength) {
+                            $scope.unSelMembersList.push($scope.allMembersList[i]);
+                        }
+                    }
+                }
+            }
+            $scope.memrsListViewOpenIs = true;
         }
     };
 
