@@ -160,8 +160,8 @@ body {
 }
 
 .member-adding-btn i.open {
-    transform: translateY(-50%) rotate(180deg);
-    -webkit-transform: translateY(-50%) rotate(180deg);
+    transform: translateY(-50%) rotate(-180deg);
+    -webkit-transform: translateY(-50%) rotate(-180deg);
 }
 
 .all-member-list {
@@ -219,6 +219,14 @@ body {
 }
 
 /* mem card list open*/
+.details-nav.row {
+    align-items: center;
+    padding: 8px 15px;
+}
+
+.mem-card-list {
+    padding: 8px;
+}
 
 .mem-card-list .no-gutters>[class*=col-] {
     padding: 10px;

@@ -91,11 +91,9 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
             var loopLength = $scope.selMembersList.length - 1;
             for (var i = 0; i < $scope.allMembersList.length; i++) {
                 for (var g = 0; g < $scope.selMembersList.length; g++) {
-                    console.log($scope.allMembersList[i].id, $scope.selMembersList[g].id);
                     if ($scope.allMembersList[i].id == $scope.selMembersList[g].id) {
                         break;
                     } else {
-                        console.log(loopLength, g);
                         if (g == loopLength) {
                             $scope.unSelMembersList.push($scope.allMembersList[i]);
                         }

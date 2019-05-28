@@ -62,7 +62,7 @@
                                     alt="Photo" ng-if="!cmList.image" />
                             </span>
                             <span class="name" ng-bind="cmList.name || '--'"></span>
-                            <button ng-click="removeFromSelList('selList', $index)"><i
+                            <button ng-click="removeFromSelList('selList', $index)" ng-if="memrsListViewOpenIs"><i
                                     class="fas fa-angle-double-right"></i></button>
                         </li>
                     </ul>
@@ -79,7 +79,7 @@
                 <div class="member-chip-list">
                     <ul>
                         <li ng-repeat="cmList in unSelMembersList track by $index">
-                            <button ng-click="removeFromSelList('allList', $index)"><i
+                            <button ng-click="removeFromSelList('allList', $index)" ng-if="memrsListViewOpenIs"><i
                                     class="fas fa-angle-double-left"></i></button>
                             <span class="name" ng-bind="cmList.name || '--'"></span>
                             <span class="icon">
@@ -92,6 +92,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-9 overflow-auto">
             <div class="card">
                 <div class="groups-input-form">
@@ -243,13 +244,20 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div class="details-nav">
-                        Total: <strong ng-bind="allMembersList.length"></strong>
+                <div class="modal-body p-0">
+                    <div class="details-nav row no-gutters">
+                        <div class="col text-left">
+                            Total: <strong ng-bind="allMembersList.length"></strong>
+                        </div>
+                        <div class="col text-right">
+                            <input type="text" class="form-control" ng-model="searchObj.name" id="nameSearch"
+                                placeholder="Search by name" />
+                        </div>
                     </div>
                     <div class="mem-card-list">
                         <div class="row no-gutters">
-                            <div class="col-3" ng-repeat="memList in allMembersList track by $index">
+                            <div class="col-3"
+                                ng-repeat="memList in allMembersList | filter : searchObj track by $index">
                                 <div class="card emp-card-ui" ng-class="{'female': memList.gender == 'female'}">
                                     <span class="emp-id" ng-bind="memList.empId"></span>
                                     <div class="card-img">
