@@ -67,6 +67,15 @@ ngApp.controller('myCtrl', ['$scope', '$timeout', '$http', function ($scope, $ti
 
     $scope.reloadFun = function (params) {
         if (params == 'onload') {
+            // $http({
+            //     method: 'GET',
+            //     url: "http://192.168.1.135:8000/",
+            //     headers: {
+            //         "Content-Type": "application/json"
+            //     }
+            // }).then(function (response) {
+            //     console.log("response", response);
+            // });
             $.getJSON("js/json/membersList.json").then(function (result) {
                 $scope.allMembersList = result;
             });
