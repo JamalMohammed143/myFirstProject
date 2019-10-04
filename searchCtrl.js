@@ -1,4 +1,4 @@
-app.controller('faceSearchCtrl', ['$scope', '$q', '$rootScope', '$http', '$state', '$sessionStorage', '$timeout', '$window', '$filter', 'CONFIG', function ($scope, $q, $rootScope, $http, $state, $sessionStorage, $timeout, $window, $filter, CONFIG) {
+app.controller('searchCtrl', ['$scope', '$q', '$rootScope', '$http', '$state', '$sessionStorage', '$timeout', '$window', '$filter', 'CONFIG', function ($scope, $q, $rootScope, $http, $state, $sessionStorage, $timeout, $window, $filter, CONFIG) {
     $scope.checkLoginStatus();
     $scope.imageLoader = false;
     $scope.detectionFlowIs = false;
